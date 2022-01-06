@@ -20,4 +20,5 @@ jobs:
       run: |
         git config --global user.email "ruimo.uno@gmail.com"
         git config --global user.name "Shisei Hanai"
-        cargo release beta --execute --no-publish --no-confirm
+        git status
+        cargo release -vv beta --execute --no-publish --no-confirm
