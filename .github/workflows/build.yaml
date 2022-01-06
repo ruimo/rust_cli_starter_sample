@@ -15,6 +15,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: darwin build tool cache
+      id: darwin-build-tool-cache
+      uses: actions/cache@v2
+      with:
+        path: ~/osxcross
+        key: ${{ runner.os }}-darwin-tool
+    - name: install cargo plugin
+      if: steps.darwin-build-tool-cache.outputs.cache-hit != 'true'
+      run: |
+        apt install clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev
+        rustup target add x86_64-apple-darwin        
+        git clone https://github.com/tpoechtrager/osxcross
+        cd osxcross
+        wget -nc https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
+        mv MacOSX10.10.sdk.tar.xz tarballs/
+        UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
+        cd ..
     - name: Build
       run: |
         cargo build --verbose --release
@@ -22,6 +39,12 @@ jobs:
         zip ../../rust_cli_starter_sample-x86_64.zip rust_cli_starter_sample
     - name: Run tests
       run: cargo test --verbose
+    - name: Build darwin binary
+      run: |
+        PATH="$(pwd)/osxcross/target/bin:$PATH"
+        cargo build --verbose --release --target x86_64-apple-darwin
+        cd target/x86_64-apple-darwin/release
+        zip ../../rust_cli_starter_sample-macos-x86_64.zip rust_cli_starter_sample
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
@@ -43,4 +66,13 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: rust_cli_starter_sample-x86_64.zip
         asset_name: rust_cli_starter_sample-x86_64.zip
+        asset_content_type: application/octet-stream
+    - name: Upload macos release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: rust_cli_starter_sample-macos-x86_64.zip
+        asset_name: rust_cli_starter_sample-macos-x86_64.zip
         asset_content_type: application/octet-stream
