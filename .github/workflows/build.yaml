@@ -44,7 +44,7 @@ jobs:
         PATH="$(pwd)/osxcross/target/bin:$PATH"
         cargo build --verbose --release --target x86_64-apple-darwin
         cd target/x86_64-apple-darwin/release
-        zip ../../rust_cli_starter_sample-macos-x86_64.zip rust_cli_starter_sample
+        zip ../../../rust_cli_starter_sample-macos-x86_64.zip rust_cli_starter_sample
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
