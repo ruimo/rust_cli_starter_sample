@@ -52,9 +52,9 @@ jobs:
         cd target/x86_64-pc-windows-gnu/release
         zip ../../../rust_cli_starter_sample-win-x86_64.zip rust_cli_starter_sample.exe
     - name: Release
-      run: |
-        set -x
-        tag_name="${GITHUB_REF##*/}"
-        hub release create -a rust_cli_starter_sample-x86_64.zip -a rust_cli_starter_sample-macos-x86_64.zip -a rust_cli_starter_sample-win-x86_64.zip -m "$tag_name" "$tag_name"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          rust_cli_starter_sample-x86_64.zip
+          rust_cli_starter_sample-macos-x86_64.zip
+          rust_cli_starter_sample-win-x86_64.zip
