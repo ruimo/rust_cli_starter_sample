@@ -21,7 +21,7 @@ jobs:
       with:
         path: ~/osxcross
         key: ${{ runner.os }}-darwin-tool
-    - name: install darwin tool plugin
+    - name: install darwin build tool
       if: steps.darwin-build-tool-cache.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev
@@ -45,6 +45,13 @@ jobs:
         cargo build --verbose --release --target x86_64-apple-darwin
         cd target/x86_64-apple-darwin/release
         zip ../../../rust_cli_starter_sample-macos-x86_64.zip rust_cli_starter_sample
+    - name: Build Windows binary
+      run: |
+        sudo apt install mingw-w64 -y
+        rustup target add x86_64-pc-windows-gnu
+        cargo build --verbose --release --target x86_64-pc-windows-gnu
+        cd target/x86_64-pc-windows-gnu
+        zip ../../../rust_cli_starter_sample-win-x86_64.zip rust_cli_starter_sample
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
@@ -75,4 +82,13 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: rust_cli_starter_sample-macos-x86_64.zip
         asset_name: rust_cli_starter_sample-macos-x86_64.zip
+        asset_content_type: application/octet-stream
+    - name: Upload windows release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: rust_cli_starter_sample-win-x86_64.zip
+        asset_name: rust_cli_starter_sample-win-x86_64.zip
         asset_content_type: application/octet-stream
