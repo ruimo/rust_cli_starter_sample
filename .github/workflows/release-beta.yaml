@@ -1,0 +1,11 @@
+name: Release beta
+
+on: [ workflow_dispatch ]
+
+jobs:
+  beta_release:
+    - name: Beta Release
+      run: |
+        git config --global user.email "ruimo.uno@gmail.com"
+        git config --global user.name "Shisei Hanai"
+        cargo release beta --execute --no-publish --no-confirm
