@@ -21,7 +21,7 @@ jobs:
       with:
         path: ~/osxcross
         key: ${{ runner.os }}-darwin-tool
-    - name: install cargo plugin
+    - name: install darwin tool plugin
       if: steps.darwin-build-tool-cache.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev
