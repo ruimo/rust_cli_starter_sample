@@ -50,8 +50,8 @@ jobs:
         sudo apt install mingw-w64 -y
         rustup target add x86_64-pc-windows-gnu
         cargo build --verbose --release --target x86_64-pc-windows-gnu
-        cd target/x86_64-pc-windows-gnu
-        zip ../../../rust_cli_starter_sample-win-x86_64.zip rust_cli_starter_sample
+        cd target/x86_64-pc-windows-gnu/release
+        zip ../../../rust_cli_starter_sample-win-x86_64.zip rust_cli_starter_sample.exe
     - name: Get the version
       id: get_version
       run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
