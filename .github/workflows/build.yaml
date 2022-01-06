@@ -24,7 +24,7 @@ jobs:
     - name: install cargo plugin
       if: steps.darwin-build-tool-cache.outputs.cache-hit != 'true'
       run: |
-        apt install clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev
+        sudo apt-get install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev cmake libxml2-dev
         rustup target add x86_64-apple-darwin        
         git clone https://github.com/tpoechtrager/osxcross
         cd osxcross
