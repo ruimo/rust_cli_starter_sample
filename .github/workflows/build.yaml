@@ -31,7 +31,6 @@ jobs:
         wget -nc https://s3.dockerproject.org/darwin/v2/MacOSX10.10.sdk.tar.xz
         mv MacOSX10.10.sdk.tar.xz tarballs/
         UNATTENDED=yes OSX_VERSION_MIN=10.7 ./build.sh
-        cd ..
     - name: Build
       run: |
         cargo build --verbose --release
@@ -52,43 +51,10 @@ jobs:
         cargo build --verbose --release --target x86_64-pc-windows-gnu
         cd target/x86_64-pc-windows-gnu/release
         zip ../../../rust_cli_starter_sample-win-x86_64.zip rust_cli_starter_sample.exe
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-    - name: create release
-      id: create_release
-      uses: actions/create-release@v1
+    - name: Release
+      run: |
+        set -x
+        tag_name="${GITHUB_REF##*/}"
+        hub release create -a rust_cli_starter_sample-x86_64.zip -a rust_cli_starter_sample-macos-x86_64.zip -a rust_cli_starter_sample-win-x86_64.zip -m "$tag_name" "$tag_name"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with: 
-        tag_name: ${{ steps.get_version.outputs.VERSION }}
-        release_name: Release ${{ steps.get_version.outputs.VERSION }}
-        draft: false
-        prerelease: false
-    - name: Upload release assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: rust_cli_starter_sample-x86_64.zip
-        asset_name: rust_cli_starter_sample-x86_64.zip
-        asset_content_type: application/octet-stream
-    - name: Upload macos release assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: rust_cli_starter_sample-macos-x86_64.zip
-        asset_name: rust_cli_starter_sample-macos-x86_64.zip
-        asset_content_type: application/octet-stream
-    - name: Upload windows release assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: rust_cli_starter_sample-win-x86_64.zip
-        asset_name: rust_cli_starter_sample-win-x86_64.zip
-        asset_content_type: application/octet-stream
